@@ -1,70 +1,244 @@
-# Getting Started with Create React App
+# CoinPulse
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+CoinPulse is a professional frontend crypto dashboard built with React and the CoinGecko API. The app focuses on real market data, clear information hierarchy, responsive behavior, and polished micro-interactions.
 
-## Available Scripts
+## Live Product Goals
 
-In the project directory, you can run:
+- Display the top 50 cryptocurrencies by market cap in a clean, scannable dashboard.
+- Help users spot trends quickly through visual feedback and structured table/card layouts.
+- Let users personalize the experience with a persisted watchlist.
+- Demonstrate interview-level frontend architecture and product thinking.
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- React (Create React App)
+- JavaScript (ES6+)
+- CSS (custom responsive theme)
+- CoinGecko REST API
+- LocalStorage for client persistence
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Core Features
 
-### `npm test`
+- Top 50 coins fetched from CoinGecko with market-cap sorting.
+- Loading, error, and manual retry states.
+- Auto-refresh data cycle for fresher market context.
+- Search by coin name or symbol.
+- Sort options for market cap, price, and 24h change.
+- Responsive market table (desktop) and card layout (mobile).
+- Watchlist with persistence across browser sessions.
+- Micro-interactions for price updates, watchlist toggles, and loading states.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Architecture
 
-### `npm run build`
+The project is split by responsibility so features remain easy to maintain and scale.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```text
+src/
+  components/
+	 common/
+		ErrorState.jsx
+		Loader.jsx
+	 dashboard/
+		CoinRow.jsx
+		CoinTable.jsx
+		MarketStatsCards.jsx
+	 layout/
+		MainLayout.jsx
+	 watchlist/
+		WatchlistPanel.jsx
+  hooks/
+	 useCoinData.js
+	 useWatchlist.js
+  services/
+	 coingeckoApi.js
+  utils/
+	 formatters.js
+  App.js
+  App.css
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Why this structure
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Components focus on rendering and interaction.
+- Hooks focus on stateful business logic.
+- Services isolate API concerns and keep fetch details reusable.
+- Utilities centralize formatting logic and avoid repeated code.
 
-### `npm run eject`
+This separation makes the app easier to test, extend, and explain in interviews.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Essential Components
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. MainLayout
+	- Provides the app shell with header, sidebar, and main content.
+	- Keeps page-level structure consistent.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+2. MarketStatsCards
+	- Shows high-level market summary metrics for fast context.
+	- Adds information hierarchy before deep table scanning.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+3. CoinTable
+	- Main data visualization for desktop users.
+	- Supports high-density financial data presentation.
 
-## Learn More
+4. CoinRow
+	- Renders per-coin details and watchlist actions.
+	- Handles price movement micro-interactions.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+5. WatchlistPanel
+	- Displays user favorites and supports quick clearing.
+	- Drives personalization and repeat utility.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Custom Hooks and Technical Logic
 
-### Code Splitting
+### useCoinData
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Purpose:
+- Fetches top-50 market data.
+- Exposes loading, error, and last-updated metadata.
+- Supports refetch and periodic refresh.
 
-### Analyzing the Bundle Size
+Key logic decisions:
+- Uses AbortController to cancel in-flight requests and avoid stale updates.
+- Keeps async logic out of UI components to improve reusability.
+- Exposes a refetch function for manual refresh and retry actions.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Interview explanation:
+- This hook separates data orchestration from presentation, which reduces component complexity and improves testability.
+- Abort handling prevents race conditions when users trigger multiple refreshes or navigate quickly.
+- Explicit loading and error states model real-world network behavior rather than only happy-path rendering.
 
-### Making a Progressive Web App
+### useWatchlist
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Purpose:
+- Stores favorite coin IDs in LocalStorage.
+- Returns helper methods to toggle and clear favorites.
 
-### Advanced Configuration
+Key logic decisions:
+- Uses lazy initial state so LocalStorage is read once on mount.
+- Persists updates in a side effect whenever watchlist changes.
+- Uses Set-based checks for fast favorite lookups while rendering rows.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Interview explanation:
+- This hook demonstrates state persistence and client-side personalization without backend complexity.
+- Defensive parsing avoids crashes from malformed storage payloads.
+- Lookup optimization keeps rendering responsive as data scales.
 
-### Deployment
+## API Design
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Endpoint used:
+- /coins/markets
 
-### `npm run build` fails to minify
+Primary query settings:
+- vs_currency=usd
+- order=market_cap_desc
+- per_page=50
+- page=1
+- sparkline=true
+- price_change_percentage=24h,7d
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Why:
+- These parameters provide enough context for a dashboard: ranking, trend changes, valuation, and mini trend signal support.
+
+## UI and UX System
+
+### Color Palette (Dark Premium)
+
+- #E7C0BB (primary text)
+- #360808 (base background)
+- #8C3C47 (elevated surfaces)
+- #DA7E8B (secondary surfaces)
+- #EC9EAB (accent and actions)
+- #E2CDCF (secondary text)
+
+Applied strategy:
+- Deep base with warm highlights for a distinct finance-brand feel.
+- Accessible text hierarchy with primary and secondary shades.
+- Semantic positive/negative colors reserved for market direction.
+
+### Responsive Data Layout
+
+Desktop:
+- Sticky table header for long-scroll usability.
+- Structured columns for rank, identity, price, changes, market cap, and watch controls.
+
+Tablet:
+- Reduced visual density while preserving key market indicators.
+
+Mobile:
+- Table rows switch to card-style blocks for readability.
+- Core values remain visible without horizontal scrolling.
+
+### Micro-Interactions
+
+- Row flash on price updates (up/down direction).
+- Percentage pulse effect on change values.
+- Watchlist button pop animation on toggle.
+- Skeleton shimmer during loading.
+
+Why this matters:
+- Animation is used to improve decision speed, not just decoration.
+- Users can identify meaningful updates quickly in volatile market views.
+
+## Getting Started
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Start development server
+
+```bash
+npm start
+```
+
+Open http://localhost:3000.
+
+### 3. Run tests
+
+```bash
+npm test
+```
+
+### 4. Build for production
+
+```bash
+npm run build
+```
+
+## Scripts
+
+- npm start: Runs the app in development mode.
+- npm test: Runs test suite in watch mode.
+- npm run build: Generates optimized production output.
+- npm run eject: Exposes CRA tooling configuration (one-way operation).
+
+## Interview-Ready Talking Points
+
+1. Architecture
+	- Clear separation between rendering, state logic, and external I/O.
+
+2. Reliability
+	- Loading/error/retry patterns and request cancellation for resilient UX.
+
+3. Performance
+	- Efficient local lookup patterns and focused rendering responsibilities.
+
+4. Product thinking
+	- Information hierarchy for traders: overview cards, searchable table, personalized watchlist.
+
+5. UX maturity
+	- Purposeful micro-interactions that highlight meaningful market change.
+
+## Roadmap Ideas
+
+- Add sparkline chart rendering in each row.
+- Add pagination or virtualization for larger datasets.
+- Add coin detail page with historical chart ranges.
+- Add currency selector and portfolio simulation.
+- Add unit tests for hooks and integration tests for watchlist behavior.
+
+## License
+
+This project is for portfolio and educational demonstration.
