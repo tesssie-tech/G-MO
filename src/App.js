@@ -1,13 +1,16 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ErrorState } from "./components/common/ErrorState";
 import { Loader } from "./components/common/Loader";
 import { CoinTable } from "./components/dashboard/CoinTable";
 import { MarketStatsCards } from "./components/dashboard/MarketStatsCards";
 import { MainLayout } from "./components/layout/MainLayout";
+import { SideNav } from "./components/layout/SideNav";
 import { WatchlistPanel } from "./components/watchlist/WatchlistPanel";
 import { useCoinData } from "./hooks/useCoinData";
 import { useWatchlist } from "./hooks/useWatchlist";
 import "./App.css";
+
+const COIN_PAGE_SIZE = 6;
 
 function sortCoins(coins, sortBy) {
   const sorted = [...coins];
@@ -29,6 +32,8 @@ function sortCoins(coins, sortBy) {
 function App() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("marketCap");
+  const [isNavOpen, setIsNavOpen] = useState(true);
+  const [visibleCoinCount, setVisibleCoinCount] = useState(COIN_PAGE_SIZE);
 
   const { coins, loading, error, lastUpdated, refetch } = useCoinData();
   const { watchlist, toggleWatchlist, clearWatchlist } = useWatchlist();
@@ -50,6 +55,21 @@ function App() {
 
   const watchlistSet = useMemo(() => new Set(watchlist), [watchlist]);
 
+  useEffect(() => {
+    setVisibleCoinCount(COIN_PAGE_SIZE);
+  }, [search, sortBy, coins.length]);
+
+  const visibleCoins = useMemo(
+    () => filteredCoins.slice(0, visibleCoinCount),
+    [filteredCoins, visibleCoinCount]
+  );
+
+  const hasMoreCoins = visibleCoinCount < filteredCoins.length;
+
+  const viewMoreCoins = () => {
+    setVisibleCoinCount((current) => Math.min(current + COIN_PAGE_SIZE, filteredCoins.length));
+  };
+
   const watchlistCoins = useMemo(
     () => coins.filter((coin) => watchlistSet.has(coin.id)),
     [coins, watchlistSet]
@@ -58,17 +78,26 @@ function App() {
   const header = (
     <div className="brand-wrap">
       <h1>CoinPulse</h1>
-      <p>Crypto dashboard powered by CoinGecko</p>
+     
     </div>
   );
 
   const sidebar = (
-    <WatchlistPanel watchlistCoins={watchlistCoins} onClear={clearWatchlist} />
+    <SideNav
+      watchlistCount={watchlistCoins.length}
+      isOpen={isNavOpen}
+      onToggle={() => setIsNavOpen((current) => !current)}
+      onNavigate={() => setIsNavOpen(false)}
+    />
   );
 
   return (
-    <MainLayout header={header} sidebar={sidebar}>
-      <section className="toolbar">
+    <MainLayout
+      header={header}
+      sidebar={sidebar}
+      sidebarOpen={isNavOpen}
+    >
+      <section id="overview" className="toolbar">
         <input
           className="search-input"
           type="search"
@@ -101,12 +130,26 @@ function App() {
       {!loading && error && <ErrorState message={error} onRetry={refetch} />}
       {!loading && !error && (
         <>
-          <MarketStatsCards coins={filteredCoins} />
-          <CoinTable
-            coins={filteredCoins}
-            watchlistSet={watchlistSet}
-            onToggleWatchlist={toggleWatchlist}
-          />
+          <section id="market-stats">
+            <MarketStatsCards coins={filteredCoins} />
+          </section>
+          <section id="coin-table">
+            <CoinTable
+              coins={visibleCoins}
+              watchlistSet={watchlistSet}
+              onToggleWatchlist={toggleWatchlist}
+            />
+            {hasMoreCoins && (
+              <div className="table-actions">
+                <button className="ghost-btn" type="button" onClick={viewMoreCoins}>
+                  View More ({filteredCoins.length - visibleCoinCount} left)
+                </button>
+              </div>
+            )}
+          </section>
+          <section id="watchlist" className="watchlist-shell">
+            <WatchlistPanel watchlistCoins={watchlistCoins} onClear={clearWatchlist} />
+          </section>
         </>
       )}
     </MainLayout>
