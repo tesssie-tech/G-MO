@@ -2,13 +2,13 @@ export function WatchlistPanel({ watchlistCoins, onClear }) {
   return (
     <section className="watchlist-card">
       <div className="watchlist-head">
-        <h2>Watchlist</h2>
+        <h2>Starred Vault</h2>
         <button className="ghost-btn" onClick={onClear} type="button">
-          Clear
+          Reset
         </button>
       </div>
       {watchlistCoins.length === 0 ? (
-        <p className="watchlist-empty">No favorites yet. Star a coin to track it.</p>
+        <p className="watchlist-empty">Your vault is empty. Star a coin to keep it close.</p>
       ) : (
         <ul className="watchlist-list">
           {watchlistCoins.map((coin) => (

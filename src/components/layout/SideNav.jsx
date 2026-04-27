@@ -1,7 +1,7 @@
 const navItems = [
   {
     href: "#overview",
-    label: "Overview",
+    label: "Panorama",
     key: "overview",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -11,7 +11,7 @@ const navItems = [
   },
   {
     href: "#market-stats",
-    label: "Market Stats",
+    label: "Pulse Metrics",
     key: "stats",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -21,7 +21,7 @@ const navItems = [
   },
   {
     href: "#coin-table",
-    label: "Coin Table",
+    label: "Market Ledger",
     key: "table",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -31,7 +31,7 @@ const navItems = [
   },
   {
     href: "#watchlist",
-    label: "Watchlist",
+    label: "Starred Vault",
     key: "watchlist",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -41,7 +41,7 @@ const navItems = [
   },
   {
     href: "#profile",
-    label: "Profile",
+    label: "Identity",
     key: "profile",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -51,7 +51,7 @@ const navItems = [
   },
   {
     href: "#messages",
-    label: "Messages",
+    label: "Dispatches",
     key: "messages",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -61,7 +61,7 @@ const navItems = [
   },
   {
     href: "#settings",
-    label: "Settings",
+    label: "Studio Settings",
     key: "settings",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -71,7 +71,14 @@ const navItems = [
   },
 ];
 
-export function SideNav({ watchlistCount, isOpen, onToggle, onNavigate }) {
+export function SideNav({
+  watchlistCount,
+  isOpen,
+  themeMode,
+  onToggle,
+  onToggleTheme,
+  onNavigate,
+}) {
   return (
     <nav className="side-nav" aria-label="Primary">
       <button
@@ -81,28 +88,54 @@ export function SideNav({ watchlistCount, isOpen, onToggle, onNavigate }) {
         aria-expanded={isOpen}
         aria-controls="site-side-nav"
       >
-        {isOpen ? "Close Menu" : "Open Menu"}
+        {isOpen ? "Collapse Navigation" : "Expand Navigation"}
       </button>
-      <p className="side-nav-label">Navigate</p>
-      <ul className="side-nav-list">
-        {navItems.map((item) => (
-          <li key={item.key}>
-            <a
-              href={item.href}
-              onClick={onNavigate}
-              title={isOpen ? undefined : item.label}
-              aria-label={isOpen ? undefined : item.label}
-            >
-              <span className="side-nav-icon">{item.icon}</span>
-              <span className="side-nav-text">
-                {item.label}
-                {item.key === "watchlist" ? ` (${watchlistCount})` : ""}
-              </span>
-            </a>
-          </li>
-        ))}
-      </ul>
-      <p className="side-nav-note">Quick jump links for the dashboard sections.</p>
+      <div className="side-nav-main" aria-label="Primary navigation">
+        <p className="side-nav-label">Curated Routes</p>
+        <ul className="side-nav-list">
+          {navItems.map((item) => (
+            <li key={item.key}>
+              <a
+                href={item.href}
+                onClick={onNavigate}
+                title={isOpen ? undefined : item.label}
+                aria-label={isOpen ? undefined : item.label}
+              >
+                <span className="side-nav-icon">{item.icon}</span>
+                <span className="side-nav-text">
+                  {item.label}
+                  {item.key === "watchlist" ? ` (${watchlistCount})` : ""}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p className="side-nav-note">Glide between your dashboard spaces in one tap.</p>
+      </div>
+      <div className="side-nav-appearance" aria-label="Appearance controls">
+        <p className="side-nav-label">Appearance</p>
+        <button
+          className="theme-switch-btn"
+          type="button"
+          onClick={onToggleTheme}
+          aria-label={`Switch to ${themeMode === "dark" ? "light" : "dark"} mode`}
+        >
+          <span className="theme-switch-icon" aria-hidden="true">
+            {themeMode === "dark" ? (
+              <svg viewBox="0 0 24 24">
+                <path d="M12 5a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V6a1 1 0 0 1 1-1Zm0 12a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1Zm7-5a1 1 0 0 1-1 1h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1ZM8 12a1 1 0 0 1-1 1H6a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1Zm7.07 4.66a1 1 0 0 1 1.41 0l.71.71a1 1 0 0 1-1.41 1.41l-.71-.7a1 1 0 0 1 0-1.42Zm-8.48-8.49a1 1 0 0 1 1.41 0l.71.7a1 1 0 1 1-1.41 1.42l-.71-.71a1 1 0 0 1 0-1.41Zm9.19 1.42a1 1 0 0 1 0-1.42l.71-.7a1 1 0 0 1 1.41 1.41l-.7.71a1 1 0 0 1-1.42 0Zm-8.48 8.49a1 1 0 0 1 0-1.42l.71-.7a1 1 0 1 1 1.41 1.41l-.71.71a1 1 0 0 1-1.41 0ZM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24">
+                <path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.5 9 9 0 1 1-6-14.5Z" />
+              </svg>
+            )}
+          </span>
+          <span className="theme-switch-text">
+            {themeMode === "dark" ? "Light Mode" : "Dark Mode"}
+          </span>
+        </button>
+      </div>
     </nav>
   );
 }

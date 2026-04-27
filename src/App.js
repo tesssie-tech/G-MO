@@ -34,6 +34,7 @@ function App() {
   const [sortBy, setSortBy] = useState("marketCap");
   const [isNavOpen, setIsNavOpen] = useState(true);
   const [visibleCoinCount, setVisibleCoinCount] = useState(COIN_PAGE_SIZE);
+  const [themeMode, setThemeMode] = useState("dark");
 
   const { coins, loading, error, lastUpdated, refetch } = useCoinData();
   const { watchlist, toggleWatchlist, clearWatchlist } = useWatchlist();
@@ -59,6 +60,10 @@ function App() {
     setVisibleCoinCount(COIN_PAGE_SIZE);
   }, [search, sortBy, coins.length]);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", themeMode);
+  }, [themeMode]);
+
   const visibleCoins = useMemo(
     () => filteredCoins.slice(0, visibleCoinCount),
     [filteredCoins, visibleCoinCount]
@@ -77,8 +82,15 @@ function App() {
 
   const header = (
     <div className="brand-wrap">
-      <h1>CoinPulse</h1>
-     
+      <div className="brand-head">
+        <span className="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2 4 6.5v11L12 22l8-4.5v-11L12 2Zm0 2.3 5.8 3.2L12 10.8 6.2 7.5 12 4.3Zm-6 5 5 2.9v6.5l-5-2.8V9.3Zm7 9.4v-6.5l5-2.9v6.6l-5 2.8Z" />
+          </svg>
+        </span>
+        <h1>CoinPulse</h1>
+      </div>
+      <p>Market intelligence, curated in real time.</p>
     </div>
   );
 
@@ -86,7 +98,11 @@ function App() {
     <SideNav
       watchlistCount={watchlistCoins.length}
       isOpen={isNavOpen}
+      themeMode={themeMode}
       onToggle={() => setIsNavOpen((current) => !current)}
+      onToggleTheme={() =>
+        setThemeMode((currentMode) => (currentMode === "dark" ? "light" : "dark"))
+      }
       onNavigate={() => setIsNavOpen(false)}
     />
   );
@@ -101,56 +117,97 @@ function App() {
         <input
           className="search-input"
           type="search"
-          placeholder="Search coin or symbol"
+          placeholder="Discover by coin name or ticker"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
         <label className="sort-wrap" htmlFor="sortBy">
-          <span>Sort</span>
+          <span>Curate By</span>
           <select
             id="sortBy"
             value={sortBy}
             onChange={(event) => setSortBy(event.target.value)}
           >
-            <option value="marketCap">Market Cap</option>
-            <option value="price">Price</option>
-            <option value="change24h">24h Change</option>
+            <option value="marketCap">Market Prestige</option>
+            <option value="price">Spot Price</option>
+            <option value="change24h">24h Momentum</option>
           </select>
         </label>
         <button className="primary-btn" type="button" onClick={refetch}>
-          Refresh
+          Refresh 
         </button>
       </section>
 
       <p className="stamp">
-        Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : "-"}
+        Last market sync: {lastUpdated ? lastUpdated.toLocaleTimeString() : "-"}
       </p>
 
       {loading && <Loader />}
       {!loading && error && <ErrorState message={error} onRetry={refetch} />}
       {!loading && !error && (
-        <>
-          <section id="market-stats">
-            <MarketStatsCards coins={filteredCoins} />
-          </section>
-          <section id="coin-table">
-            <CoinTable
-              coins={visibleCoins}
-              watchlistSet={watchlistSet}
-              onToggleWatchlist={toggleWatchlist}
-            />
-            {hasMoreCoins && (
-              <div className="table-actions">
-                <button className="ghost-btn" type="button" onClick={viewMoreCoins}>
-                  View More ({filteredCoins.length - visibleCoinCount} left)
-                </button>
-              </div>
-            )}
-          </section>
-          <section id="watchlist" className="watchlist-shell">
-            <WatchlistPanel watchlistCoins={watchlistCoins} onClear={clearWatchlist} />
-          </section>
-        </>
+        <div className="dashboard-grid">
+          <div className="dashboard-main">
+            <section id="market-stats">
+              <MarketStatsCards coins={filteredCoins} watchlistCoins={watchlistCoins} />
+            </section>
+            <section id="coin-table">
+              <CoinTable
+                coins={visibleCoins}
+                watchlistSet={watchlistSet}
+                onToggleWatchlist={toggleWatchlist}
+              />
+              {hasMoreCoins && (
+                <div className="table-actions">
+                  <button className="ghost-btn" type="button" onClick={viewMoreCoins}>
+                    Reveal More ({filteredCoins.length - visibleCoinCount} remaining)
+                  </button>
+                </div>
+              )}
+            </section>
+            <section id="watchlist" className="watchlist-shell">
+              <WatchlistPanel watchlistCoins={watchlistCoins} onClear={clearWatchlist} />
+            </section>
+          </div>
+          <aside className="fast-actions" aria-label="Fast actions">
+            <h2>Fast Actions</h2>
+            <p>One-click shortcuts for your dashboard workflow.</p>
+            <button className="primary-btn" type="button" onClick={refetch}>
+              Refresh Pulse
+            </button>
+            <button
+              className="ghost-btn"
+              type="button"
+              onClick={() =>
+                setThemeMode((currentMode) => (currentMode === "dark" ? "light" : "dark"))
+              }
+            >
+              Switch to {themeMode === "dark" ? "Light" : "Dark"} Mode
+            </button>
+            <button
+              className="ghost-btn"
+              type="button"
+              onClick={() => setVisibleCoinCount(filteredCoins.length)}
+              disabled={!hasMoreCoins}
+            >
+              Show All Coins
+            </button>
+            <button
+              className="ghost-btn"
+              type="button"
+              onClick={clearWatchlist}
+              disabled={watchlistCoins.length === 0}
+            >
+              Clear Starred Vault
+            </button>
+            <button
+              className="ghost-btn"
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            >
+              Back to Top
+            </button>
+          </aside>
+        </div>
       )}
     </MainLayout>
   );
