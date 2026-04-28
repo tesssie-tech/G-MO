@@ -242,3 +242,19 @@ npm run build
 ## License
 
 This project is for portfolio and educational demonstration.
+
+## Recent changes
+
+- Replaced the default React favicon with the app brand (`public/brand-logo.svg`).
+- Added an inline welcome banner in the header that reads `localStorage.username` (falls back to "Guest").
+- Reworked the side navigation: removed the separate expand/collapse button, made the Panorama item toggle the nav, and unified item styling.
+- Replaced the theme icon with an accessible sliding on/off switch that toggles light/dark mode.
+
+To set the username shown in the banner open the browser console and run:
+
+```js
+localStorage.setItem('username', 'Your Name');
+location.reload();
+```
+
+If you recently pulled changes and the favicon doesn't update, hard-refresh the page (Ctrl+F5) to clear the browser cache.
