@@ -59,6 +59,70 @@ body {
   box-shadow: var(--shadow);
 }
 
+.cp-header .brand-wrap {
+  display: grid;
+  gap: 12px;
+}
+
+.header-top {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-toolbar {
+  margin-top: 0;
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto auto;
+  align-items: center;
+}
+
+.filter-refresh-wrap {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+}
+
+.filter-refresh-wrap .sort-wrap {
+  margin: 0;
+}
+
+.notification-btn {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  width: 41px;
+  height: 41px;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.22);
+  color: var(--text-100);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.notification-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+}
+
+.notification-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.notification-btn:hover,
+.notification-btn:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(236, 158, 171, 0.5);
+  background: rgba(236, 158, 171, 0.16);
+  outline: none;
+}
+
 .nav-toggle-btn {
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -89,6 +153,16 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.brand-head h1 {
+  margin: 0;
+}
+
+.welcome-inline {
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .brand-icon {
@@ -153,8 +227,8 @@ body {
 }
 
 .side-nav-appearance {
-  border-top: 1px solid var(--line);
-  padding-top: 12px;
+  border-top: 0;
+  padding-top: 0;
 }
 
 .side-nav-toggle {
@@ -162,18 +236,18 @@ body {
 }
 
 .theme-switch-btn {
-  border: 1px solid var(--line);
+  border: 0;
   border-radius: 10px;
-  background: linear-gradient(120deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.12));
+  background: transparent;
   color: var(--text-100);
   font-weight: 600;
-  height: 40px;
-  padding: 0 12px;
+  height: auto;
+  padding: 6px 8px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease, filter 0.2s ease;
+  transition: transform 0.12s ease;
 }
 
 .theme-switch-icon {
@@ -183,6 +257,8 @@ body {
   align-items: center;
   justify-content: center;
   flex: 0 0 18px;
+  background: transparent;
+  border: 0;
 }
 
 .theme-switch-icon svg {
@@ -195,9 +271,43 @@ body {
 .theme-switch-btn:hover,
 .theme-switch-btn:focus-visible {
   transform: translateY(-1px);
-  border-color: rgba(236, 158, 171, 0.5);
-  filter: brightness(1.05);
   outline: none;
+}
+
+/* Sliding switch styles */
+.switch {
+  width: 40px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  display: inline-block;
+  position: relative;
+  flex: 0 0 40px;
+  transition: background 0.18s ease;
+}
+
+.switch.on {
+  background: linear-gradient(90deg, rgba(236,158,171,0.9), rgba(198,85,67,0.9));
+}
+
+.switch-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.18s ease, left 0.18s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+
+.switch.on .switch-thumb {
+  transform: translateX(18px);
+}
+
+.theme-switch-text {
+  font-weight: 600;
 }
 
 .side-nav-label {
@@ -230,11 +340,66 @@ body {
   transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
+.side-nav-overview-btn {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--text-100);
+  background: rgba(0, 0, 0, 0.18);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.side-nav-overview-btn .side-nav-icon {
+  flex: 0 0 20px;
+}
+
+.side-nav-overview-btn:hover,
+.side-nav-overview-btn:focus-visible {
+  transform: translateX(2px);
+  border-color: rgba(236, 158, 171, 0.5);
+  background: rgba(236, 158, 171, 0.16);
+  outline: none;
+}
+
+/* Make all side-nav items borderless and transparent to match Panorama */
+.side-nav-list a,
+.side-nav-overview-btn {
+  border: 0;
+  background: transparent;
+}
+
+.side-nav-list a:hover,
+.side-nav-list a:focus-visible,
+.side-nav-overview-btn:hover,
+.side-nav-overview-btn:focus-visible {
+  transform: translateX(2px);
+  outline: none;
+  border: 0;
+  background: transparent;
+}
+
+/* Ensure theme rules do not reintroduce background/border */
+:root[data-theme="dark"] .side-nav-list a,
+:root[data-theme="light"] .side-nav-list a {
+  background: transparent !important;
+  border: 0 !important;
+}
+
 .side-nav-icon {
   width: 20px;
   height: 20px;
   display: inline-flex;
   flex: 0 0 20px;
+  background: transparent;
+  border: 0;
+  padding: 0;
 }
 
 .side-nav-icon svg {
@@ -248,9 +413,20 @@ body {
   white-space: nowrap;
 }
 
-.sidebar-closed .side-nav-list a {
+.sidebar-closed .side-nav-list a,
+.sidebar-closed .side-nav-list button.side-nav-overview-btn {
   justify-content: center;
   padding: 10px;
+  border: 0;
+  background: none;
+  background-color: transparent;
+}
+
+.sidebar-closed .side-nav-list a:hover,
+.sidebar-closed .side-nav-list a:focus-visible {
+  background: none;
+  background-color: transparent;
+  border: 0;
 }
 
 .sidebar-closed .side-nav-toggle {
@@ -273,6 +449,8 @@ body {
   justify-self: center;
   justify-content: center;
   padding: 0;
+  border: 0;
+  background: transparent;
 }
 
 .sidebar-closed .theme-switch-text {
@@ -301,7 +479,7 @@ body {
 .side-nav-note {
   margin: 2px 0 0;
   font-size: 0.85rem;
-  color: var(--text-200);
+  
 }
 
 :root[data-theme="dark"] .cp-sidebar {
@@ -334,6 +512,39 @@ body {
 
 :root[data-theme="light"] .primary-btn {
   color: #fff;
+}
+
+/* Welcome banner */
+.welcome-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, rgba(236,158,171,0.06), rgba(0,0,0,0.03));
+  color: var(--text-100);
+}
+
+.welcome-banner .wave {
+  display: inline-block;
+  font-size: 1.25rem;
+  transform-origin: 60% 60%;
+  animation: wave 1.2s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0% { transform: rotate(0deg); }
+  15% { transform: rotate(14deg); }
+  30% { transform: rotate(-8deg); }
+  45% { transform: rotate(14deg); }
+  60% { transform: rotate(-4deg); }
+  75% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.welcome-text {
+  font-weight: 700;
 }
 
 .cp-main {
@@ -370,6 +581,36 @@ body {
 .fast-actions p {
   margin: 0;
   font-size: 0.9rem;
+  color: var(--text-200);
+}
+
+.transfer-field {
+  display: grid;
+  gap: 6px;
+}
+
+.transfer-field span {
+  font-size: 0.82rem;
+  color: var(--text-200);
+}
+
+.transfer-input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.22);
+  color: var(--text-100);
+}
+
+.transfer-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.transfer-status {
+  font-size: 0.84rem;
   color: var(--text-200);
 }
 
@@ -477,7 +718,7 @@ body {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -781,6 +1022,15 @@ body {
 @media (max-width: 760px) {
   .cp-shell {
     padding: 14px;
+  }
+
+  .header-top {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .header-toolbar {
+    grid-template-columns: 1fr;
   }
 
   .toolbar {

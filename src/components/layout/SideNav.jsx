@@ -81,36 +81,45 @@ export function SideNav({
 }) {
   return (
     <nav className="side-nav" aria-label="Primary">
-      <button
-        className="nav-toggle-btn side-nav-toggle"
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-controls="site-side-nav"
-      >
-        {isOpen ? "Collapse Navigation" : "Expand Navigation"}
-      </button>
       <div className="side-nav-main" aria-label="Primary navigation">
-        <p className="side-nav-label">Curated Routes</p>
         <ul className="side-nav-list">
           {navItems.map((item) => (
             <li key={item.key}>
-              <a
-                href={item.href}
-                onClick={onNavigate}
-                title={isOpen ? undefined : item.label}
-                aria-label={isOpen ? undefined : item.label}
-              >
-                <span className="side-nav-icon">{item.icon}</span>
-                <span className="side-nav-text">
-                  {item.label}
-                  {item.key === "watchlist" ? ` (${watchlistCount})` : ""}
-                </span>
-              </a>
+              {item.key === "overview" ? (
+                <button
+                  type="button"
+                  className="side-nav-overview-btn"
+                  onClick={() => {
+                    onToggle();
+                    try {
+                      window.location.hash = item.href;
+                    } catch (e) {}
+                  }}
+                  aria-pressed={isOpen}
+                  title={isOpen ? undefined : item.label}
+                  aria-label={isOpen ? undefined : item.label}
+                >
+                  <span className="side-nav-icon">{item.icon}</span>
+                  <span className="side-nav-text">{item.label}</span>
+                </button>
+              ) : (
+                <a
+                  href={item.href}
+                  onClick={onNavigate}
+                  title={isOpen ? undefined : item.label}
+                  aria-label={isOpen ? undefined : item.label}
+                >
+                  <span className="side-nav-icon">{item.icon}</span>
+                  <span className="side-nav-text">
+                    {item.label}
+                    {item.key === "watchlist" ? ` (${watchlistCount})` : ""}
+                  </span>
+                </a>
+              )}
             </li>
           ))}
         </ul>
-        <p className="side-nav-note">Glide between your dashboard spaces in one tap.</p>
+   
       </div>
       <div className="side-nav-appearance" aria-label="Appearance controls">
         <p className="side-nav-label">Appearance</p>
@@ -119,17 +128,11 @@ export function SideNav({
           type="button"
           onClick={onToggleTheme}
           aria-label={`Switch to ${themeMode === "dark" ? "light" : "dark"} mode`}
+          role="switch"
+          aria-checked={themeMode !== "dark"}
         >
-          <span className="theme-switch-icon" aria-hidden="true">
-            {themeMode === "dark" ? (
-              <svg viewBox="0 0 24 24">
-                <path d="M12 5a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V6a1 1 0 0 1 1-1Zm0 12a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1Zm7-5a1 1 0 0 1-1 1h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1ZM8 12a1 1 0 0 1-1 1H6a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1Zm7.07 4.66a1 1 0 0 1 1.41 0l.71.71a1 1 0 0 1-1.41 1.41l-.71-.7a1 1 0 0 1 0-1.42Zm-8.48-8.49a1 1 0 0 1 1.41 0l.71.7a1 1 0 1 1-1.41 1.42l-.71-.71a1 1 0 0 1 0-1.41Zm9.19 1.42a1 1 0 0 1 0-1.42l.71-.7a1 1 0 0 1 1.41 1.41l-.7.71a1 1 0 0 1-1.42 0Zm-8.48 8.49a1 1 0 0 1 0-1.42l.71-.7a1 1 0 1 1 1.41 1.41l-.71.71a1 1 0 0 1-1.41 0ZM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24">
-                <path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.5 9 9 0 1 1-6-14.5Z" />
-              </svg>
-            )}
+          <span className={`switch ${themeMode === "dark" ? "off" : "on"}`} aria-hidden="true">
+            <span className="switch-thumb" />
           </span>
           <span className="theme-switch-text">
             {themeMode === "dark" ? "Light Mode" : "Dark Mode"}

@@ -41,14 +41,6 @@ export function MarketStatsCards({ coins = [], watchlistCoins = [] }) {
     CHART_PAD -
     ((0 - chartMin) / chartRange) * chartInnerHeight;
 
-  const avgChange24h =
-    coins.length > 0
-      ? coins.reduce(
-          (sum, coin) => sum + (coin.price_change_percentage_24h || 0),
-          0
-        ) / coins.length
-      : 0;
-
   return (
     <section className="stats-grid" aria-label="Market overview">
       <article className="stat-card">
@@ -85,13 +77,6 @@ export function MarketStatsCards({ coins = [], watchlistCoins = [] }) {
             </>
           )}
         </div>
-      </article>
-      <article className="stat-card">
-        <p className="stat-label">Average 24h Move</p>
-        <h3 className={avgChange24h >= 0 ? "pos" : "neg"}>
-          {avgChange24h >= 0 ? "+" : ""}
-          {avgChange24h.toFixed(2)}%
-        </h3>
       </article>
     </section>
   );
